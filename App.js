@@ -6,6 +6,8 @@ import { NavigationContainer, useNavigationState } from '@react-navigation/nativ
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
+const APP_NAME = "KooKoo";
+
 let PAGES = [
   { bShow: true,  icon: (size, color) => <Entypo        name="magnifying-glass" size={size} color={color} />, title: "Discover",   component: App_Discover },
   { bShow: true,  icon: (size, color) => <Entypo        name="heart-outlined"   size={size} color={color} />, title: "For You",    component: App_Discover },
@@ -16,13 +18,13 @@ let PAGES = [
 ];
 
 const CATEGORIES = [
-  { name: "The Rolling Stones", backgroundImageRes: require("./assets/the-rolling-stones.jpg") },
-  { name: "Les Inconnus",       backgroundImageRes: require("./assets/les-inconnus.jpg")       }
+  { name: "The Rolling Stones", backgroundImageRes: require("./assets/the-rolling-stones.jpg"), rating: 4.8 },
+  { name: "Les Inconnus",       backgroundImageRes: require("./assets/les-inconnus.jpg"),       rating: 4.5 }
 ];
 
 let EVENTS = [
-  { category: "The Rolling Stones", name: "The Rolling Stones Concert", date: "01/01/01", location: "Atlanta, GA" },
-  { category: "Les Inconnus",       name: "Les Inconnus Concert",       date: "01/01/01", location: "Atlanta, GA" }
+  { category: "The Rolling Stones", name: "The Rolling Stones Concert", date: { day: 17, month: "Nov", dayName: "Wed", time: "7:30pm" }, location: "Atlanta, GA" },
+  { category: "Les Inconnus",       name: "Les Inconnus Concert",       date: { day: 17, month: "Nov", dayName: "Wed", time: "7:30pm" }, location: "Atlanta, GA" }
 ];
 
 let TICKETS = [
@@ -110,12 +112,27 @@ function App_Category({ navigation, route }) {
           <Ionicons name="chevron-back-outline" size={35} color="white" />
         </TouchableOpacity>
         <View style={{ flexDirection: "row" }}>
-          <Entypo name="heart-outlined"    size={25} color="white" />
+          <TouchableOpacity><Entypo name="heart-outlined" size={25} color="white" /></TouchableOpacity>
           <View style={{ paddingHorizontal: 10 }}></View>
-          <Entypo name="share-alternative" size={25} color="white" />
+          <TouchableOpacity><Entypo name="share-alternative" size={25} color="white" /></TouchableOpacity>
         </View>
       </View>
-      <View style={{ backgroundColor: "#1F262D", paddingHorizontal: 20, paddingVertical: 20 }}>
+      <View style={{ backgroundColor: "#1F262D",
+                     paddingHorizontal: 20,
+                     paddingVertical: 20
+      }}>
+        <View style={{ padding: 5,
+                       borderRadius: 5,
+                       borderWidth: 1,
+                       borderColor: "#FFFFFF",
+                       alignSelf: 'flex-start',
+                       flexDirection: "row",
+                       alignItems: "center",
+                       marginBottom: 10
+        }}>
+          <Entypo name="star" size={15} color="white" />
+          <Text style={{ color: "#FFFFFF" }}>{category.rating}</Text>
+        </View>
         <Image style={{ width: "100%",
                         height: undefined,
                         aspectRatio: 16.0/9.0 }} source={category.backgroundImageRes} />
@@ -125,10 +142,44 @@ function App_Category({ navigation, route }) {
         <Text style={{ color: "#FFFFFF", fontSize: 30, fontWeight: "300" }}>Tickets</Text>
         <View style={{ paddingVertical: 10 }}></View>
         <View style={{ flexDirection: "row" }}>
-          <TouchableOpacity>
-            <Text style={{ color: "#FFFFFF", fontSize: 20 }}>Events ({categoryEvents.length})</Text>
+          <TouchableOpacity style={{ paddingRight: 20 }}>
+            <View style={{ paddingBottom: 7, borderBottomColor: "#FFFFFF", borderBottomWidth: 3 }}>
+              <Text style={{ color: "#FFFFFF", fontSize: 20 }}>Events ({categoryEvents.length})</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={{ paddingRight: 20 }}>
+            <View style={{ paddingBottom: 7 }}>
+              <Text style={{ color: "#FFFFFF", fontSize: 20 }}>Reviews</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={{ paddingRight: 20 }}>
+            <View style={{ paddingBottom: 7 }}>
+              <Text style={{ color: "#FFFFFF", fontSize: 20 }}>Bio</Text>
+            </View>
           </TouchableOpacity>
         </View>
+      </View>
+      <View style={{ padding: 20 }}>
+        {categoryEvents.map((e, i) => {
+          return (
+            <TouchableOpacity key={i} style={{ paddingBottom: 10,
+                                               borderBottomWidth: 0.5,
+                                               flexDirection: "row"
+            }}>
+              <View style={{ flex: 1 }}>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Text style={{ fontSize: 17, fontWeight: "600", color: "purple" }}>{e.date.month} {e.date.day}</Text>
+                  <Text style={{ paddingLeft: 10, fontSize: 17 }}>{e.date.dayName}</Text>
+                  <Entypo name="dot-single" size={24} color="black" />
+                  <Text style={{ fontSize: 17 }}>{e.date.time}</Text>
+                </View>
+              </View>
+              <View>
+                <Entypo name="dots-three-vertical" size={24} color="black" />
+              </View>
+            </TouchableOpacity>
+          )
+        })}
       </View>
     </ScreenHolder>
   );
