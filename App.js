@@ -1,20 +1,22 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Fragment } from 'react';
 import { Entypo, Foundation, MaterialIcons, Ionicons } from '@expo/vector-icons'; 
-import { Text, View, SafeAreaView, ScrollView, Image, Dimensions, Pressable } from 'react-native';
+import { Text, View, SafeAreaView, ScrollView, Image, Dimensions, Pressable, Button } from 'react-native';
 import { NavigationContainer, useNavigationState } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { TouchableOpacity } from 'react-native-gesture-handler'
+import Emoji from 'react-native-emoji';
 
 const APP_NAME = "KooKoo";
 
 let PAGES = [
-  { bShow: true,  icon: (size, color) => <Entypo        name="magnifying-glass" size={size} color={color} />, title: "Discover",   component: App_Discover },
-  { bShow: true,  icon: (size, color) => <Entypo        name="heart-outlined"   size={size} color={color} />, title: "For You",    component: App_Discover },
-  { bShow: true,  icon: (size, color) => <Entypo        name="ticket"           size={size} color={color} />, title: "My Events",  component: App_Discover },
-  { bShow: true,  icon: (size, color) => <Foundation    name="dollar-bill"      size={size} color={color} />, title: "Sell",       component: App_Discover },
-  { bShow: true,  icon: (size, color) => <MaterialIcons name="account-circle"   size={size} color={color} />, title: "My Account", component: App_Discover },
-  { bShow: false, icon: () => {},                                                                             title: "Category",   component: App_Category }
+  { bShow: true,  icon: (size, color) => <Entypo        name="magnifying-glass" size={size} color={color} />, title: "Discover",               component: App_Discover },
+  { bShow: true,  icon: (size, color) => <Entypo        name="heart-outlined"   size={size} color={color} />, title: "For You",                component: App_Discover },
+  { bShow: true,  icon: (size, color) => <Entypo        name="ticket"           size={size} color={color} />, title: "My Events",              component: App_Discover },
+  { bShow: true,  icon: (size, color) => <Foundation    name="dollar-bill"      size={size} color={color} />, title: "Sell",                   component: App_Discover },
+  { bShow: true,  icon: (size, color) => <MaterialIcons name="account-circle"   size={size} color={color} />, title: "My Account",             component: App_Discover },
+  { bShow: false, icon: () => {},                                                                             title: "Category",               component: App_Category },
+  { bShow: false, icon: () => {},                                                                             title: "EventConditionsConsent", component: App_EventConditionsConsent},
 ];
 
 const CATEGORIES = [
@@ -23,8 +25,8 @@ const CATEGORIES = [
 ];
 
 let EVENTS = [
-  { category: "The Rolling Stones", name: "The Rolling Stones Concert", date: { day: 17, month: "Nov", dayName: "Wed", time: "7:30pm" }, location: "Atlanta, GA" },
-  { category: "Les Inconnus",       name: "Les Inconnus Concert",       date: { day: 17, month: "Nov", dayName: "Wed", time: "7:30pm" }, location: "Atlanta, GA" }
+  { category: "The Rolling Stones", name: "The Rolling Stones Concert", date: { day: 17, month: "Nov", dayName: "Wed", time: "7:30pm" }, location: "Mercedes-Benz Stadium - Atlanta, GA", operation: "The Rolling Stones - No Filter Tour 2021" },
+  { category: "Les Inconnus",       name: "Les Inconnus Concert",       date: { day: 17, month: "Nov", dayName: "Wed", time: "7:30pm" }, location: "Mercedes-Benz Stadium - Atlanta, GA", operation: "Les Inconnus - Le Retour" }
 ];
 
 let TICKETS = [
@@ -165,13 +167,25 @@ function App_Category({ navigation, route }) {
             <TouchableOpacity key={i} style={{ paddingBottom: 10,
                                                borderBottomWidth: 0.5,
                                                flexDirection: "row"
-            }}>
+            }} onPress={() => { navigation.navigate("EventConditionsConsent", { categoryID: route.params, eventID: i }) }}>
               <View style={{ flex: 1 }}>
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <Text style={{ fontSize: 17, fontWeight: "600", color: "purple" }}>{e.date.month} {e.date.day}</Text>
                   <Text style={{ paddingLeft: 10, fontSize: 17 }}>{e.date.dayName}</Text>
                   <Entypo name="dot-single" size={24} color="black" />
                   <Text style={{ fontSize: 17 }}>{e.date.time}</Text>
+                </View>
+                <View style={{ paddingTop: 10 }}>
+                  <Text style={{ fontSize: 17, fontWeight: "700" }}>{e.name}</Text>
+                  <Text style={{ fontSize: 17, fontWeight: "400" }}>{e.operation}</Text>
+                </View>
+                <View style={{ paddingTop: 10,
+                               flexDirection: "row",
+                               justifyContent: "center",
+                               alignItems: "center"
+                }}>
+                  <Ionicons name="medical" size={24} color="red" />
+                  <Text style={{ paddingLeft: 10 }}>This event imposes health requirements</Text>
                 </View>
               </View>
               <View>
@@ -180,6 +194,72 @@ function App_Category({ navigation, route }) {
             </TouchableOpacity>
           )
         })}
+      </View>
+    </ScreenHolder>
+  );
+}
+
+function App_EventConditionsConsent({ navigation, route }) {
+  const categoryID = route.params.categoryID;
+  const eventID    = route.params.eventID;
+
+  let event = EVENTS[route.params.eventID];
+
+  return (
+    <ScreenHolder>
+      <View style={{ height: 48,
+                     width: "100%",
+                     backgroundColor: "#1F262D",
+                     display: "flex",
+                     flexDirection: "row",
+                     alignItems: "center",
+                     paddingHorizontal: 10,
+                     justifyContent: "space-between"
+      }}>
+        <TouchableOpacity onPress={() => {navigation.goBack()}}>
+          <Ionicons name="chevron-back-outline" size={35} color="white" />
+        </TouchableOpacity>
+        <Text style={{ fontSize: 17, color: "#FFFFFF"}}>{event.name}</Text>
+        <View style={{ flexDirection: "row" }}>
+          <TouchableOpacity><Entypo name="heart-outlined" size={25} color="white" /></TouchableOpacity>
+          <View style={{ paddingHorizontal: 10 }}></View>
+          <TouchableOpacity><Entypo name="share-alternative" size={25} color="white" /></TouchableOpacity>
+        </View>
+      </View>
+      <View>
+        <View style={{ padding: 10,
+                       justifyContent: "center",
+                       alignItems: "center"
+        }}>
+          <Ionicons name="medical" size={24} color="red" />
+          <Text style={{ textAlign: "center", fontSize: 25, fontWeight: "800" }}>Health Requirements</Text>
+        </View>
+        <View style={{ padding: 15, flexDirection: "row", alignItems: "center" }}>
+          <Emoji name="wave" style={{ fontSize: 60 }} />
+          <View style={{ paddingHorizontal: 10, paddingTop: 10 }}>
+            <Text>We'll guide you through the simply process of satisfying the health requirements</Text>            
+          </View>
+        </View>
+        <Text style={{ textAlign: "center" }}>Your safety is our priority.</Text>
+        <View style={{ padding: 15 }}>
+          <Text style={{ fontSize: 22, fontWeight: "700" }}>Conditions</Text>
+          <Text style={{ paddingTop: 10 }}>To attend this event, participants 13 and older must:</Text>
+          <View>
+            <Text style={{ paddingTop: 10 }}>- Be fully vaccinated against Covid-19</Text>
+            <Text style={{ paddingTop: 10 }}>- or Have taken a negative test for Covid-19, a maximum of 72h prior to the start of the event</Text>
+            <Text style={{ paddingTop: 10 }}>- or Have ___</Text>
+            <Text style={{ paddingTop: 10 }}>- or Have this requirement waived at the discretion of the event organizers.</Text>
+          </View>
+        </View>
+        <View style={{ padding: 15 }}>
+          <Text style={{ fontSize: 22, fontWeight: "700" }}>Compliance</Text>
+          <Text style={{ paddingTop: 10 }}>To show proof participants fit the above requirements, they can:</Text>
+          <View>
+            <Text style={{ paddingTop: 10 }}>- Bring physical documentation to show prior to entry</Text>
+            <Text style={{ paddingTop: 10 }}>- Use our free service "COO" embedded within this application to upload your documents</Text>
+          </View>
+        </View>
+        <Button title="I agree to the above requirements"></Button>
       </View>
     </ScreenHolder>
   );
