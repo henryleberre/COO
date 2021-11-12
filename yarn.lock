@@ -1339,6 +1339,11 @@
     "sudo-prompt" "^9.0.0"
     "wcwidth" "^1.0.1"
 
+"@react-native-picker/picker@^2.2.0":
+  "integrity" "sha512-zhzXsppY9t6TU39WMx/x1L1PyP3dPgGhtav7Yo8nlfihNGIAFwHnNcNuyC8CLdWxKj9n2+Z6+ZR6r/Kda82JnA=="
+  "resolved" "https://registry.npmjs.org/@react-native-picker/picker/-/picker-2.2.0.tgz"
+  "version" "2.2.0"
+
 "@react-native/assets@1.0.0":
   "integrity" "sha512-KrwSpS1tKI70wuKl68DwJZYEvXktDHdZMG0k2AXD/rJVSlB23/X2CB2cutVR0HwNMJIal9HOUOBB2rVfa6UGtQ=="
   "resolved" "https://registry.npmjs.org/@react-native/assets/-/assets-1.0.0.tgz"
@@ -4586,6 +4591,16 @@
     "jscodeshift" "^0.11.0"
     "nullthrows" "^1.1.1"
 
+"react-native-dropdown@^0.0.6":
+  "integrity" "sha1-9LiZtAgsSCM0DHN3++c7wBOZFI0="
+  "resolved" "https://registry.npmjs.org/react-native-dropdown/-/react-native-dropdown-0.0.6.tgz"
+  "version" "0.0.6"
+
+"react-native-element-dropdown@^1.4.6":
+  "integrity" "sha512-MkS9eC0vuNrHIxeCbU61gFESqeO4VwKqqalemr813zEvGoAykmaWKdVodwnjtLEZCF9vwI7s7L8sI4AZ4w64QQ=="
+  "resolved" "https://registry.npmjs.org/react-native-element-dropdown/-/react-native-element-dropdown-1.4.6.tgz"
+  "version" "1.4.6"
+
 "react-native-emoji@^1.8.0":
   "integrity" "sha512-VunKOtYes6eymyWwE7QS3mhmNXksTt2AN92PcGRtmDKLDPjuKrwd5tcJckFUekAK3H+6AMpwYy30CsiCJrDdFQ=="
   "resolved" "https://registry.npmjs.org/react-native-emoji/-/react-native-emoji-1.8.0.tgz"
@@ -4629,7 +4644,7 @@
     "normalize-css-color" "^1.0.2"
     "prop-types" "^15.6.0"
 
-"react-native@*", "react-native@>=0.64.0-rc.0 || 0.0.0-*", "react-native@0.64.2":
+"react-native@*", "react-native@>=0.57", "react-native@>=0.60.0-rc.0 <1.0.x", "react-native@>=0.64.0-rc.0 || 0.0.0-*", "react-native@0.64.2":
   "integrity" "sha512-Ty/fFHld9DcYsFZujXYdeVjEhvSeQcwuTGXezyoOkxfiGEGrpL/uwUZvMzwShnU4zbbTKDu2PAm/uwuOittRGA=="
   "resolved" "https://registry.npmjs.org/react-native/-/react-native-0.64.2.tgz"
   "version" "0.64.2"
@@ -4672,7 +4687,7 @@
   "resolved" "https://registry.npmjs.org/react-refresh/-/react-refresh-0.4.3.tgz"
   "version" "0.4.3"
 
-"react@*", "react@^16.8.0 || ^17.0.0", "react@>=17.0.1", "react@17.0.1":
+"react@*", "react@^16.8.0 || ^17.0.0", "react@>=16.8.1", "react@>=17.0.1", "react@16 || 17", "react@17.0.1":
   "integrity" "sha512-lG9c9UuMHdcAexXtigOZLX8exLWkW0Ku29qPRU8uhF2R9BN96dLCt0psvzPLlHc5OWkgymP3qwTRgbnw5BKx3w=="
   "resolved" "https://registry.npmjs.org/react/-/react-17.0.1.tgz"
   "version" "17.0.1"
