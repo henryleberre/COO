@@ -5,10 +5,10 @@ import { Text, View, SafeAreaView, ScrollView, Image, Dimensions, Pressable, But
 import { NavigationContainer, useNavigationState } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import Emoji from 'react-native-emoji';
-import { Picker } from '@react-native-picker/picker';
+import Emoji    from 'react-native-emoji';
+import Carousel from 'react-native-snap-carousel';
 
-const APP_NAME = "KooKoo";
+const APP_NAME = "COO";
 
 let PAGES = [
   { bShow: true,  icon: (size, color) => <Entypo        name="magnifying-glass" size={size} color={color} />, title: "Discover",               component: App_Discover },
@@ -22,7 +22,8 @@ let PAGES = [
   { bShow: false, icon: () => {},                                                                             title: "Privacy Policy",         component: App_PrivacyPolicy },
   { bShow: false, icon: () => {},                                                                             title: "SelectSeats",            component: App_SelectSeats },
   { bShow: false, icon: () => {},                                                                             title: "Pay",                    component: App_Pay},
-  { bShow: false, icon: () => {},                                                                             title: "GetTicketFinished",      component: App_GetTicketFinished }
+  { bShow: false, icon: () => {},                                                                             title: "GetTicketFinished",      component: App_GetTicketFinished },
+  { bShow: false, icon: () => {},                                                                             title: "Tickets",                component: App_Tickets }
 ];
 
 const CATEGORIES = [
@@ -35,9 +36,7 @@ let EVENTS = [
   { category: "Les Inconnus",       name: "Les Inconnus Concert",       date: { day: 17, month: "Nov", dayName: "Wed", time: "7:30pm" }, location: "Mercedes-Benz Stadium - Atlanta, GA", covidLocation: "The Box Office", seatImage: require('./assets/bobby-dodd-stadium.jpg'), operation: "Les Inconnus - Le Retour" }
 ];
 
-let TICKETS = [
-  { name: "", count: 1 }
-];
+let TICKETS = [  ];
 
 function GetEventsFilter(category) {
   return EVENTS.filter((e) => e.category==category);
@@ -368,7 +367,8 @@ function App_SelectSeats({ navigation, route }) {
             <Pressable style={{paddingHorizontal: 10}} onPress={() => {setSeatCount(seatCount+1)}}><Text style={{ fontWeight: "800", fontSize: 25 }}>+</Text></Pressable>
           </View>
         </View>
-        <Pressable onPress={() => {navigation.navigate("Pay", Object.assign({}, route.params, { nTickets: seatCount }))}}>
+        {[...Array(5).keys()].map((e, i) => {
+          return <Pressable key={i} onPress={() => {navigation.navigate("Pay", Object.assign({}, route.params, { nTickets: seatCount }))}}>
           <TouchableOpacity>
             <View style={{ paddingVertical: 20, flexDirection: "row", alignItems: "center", borderBottomWidth: 2 }}>
               <View style={{ flex: 1 }}>
@@ -379,7 +379,8 @@ function App_SelectSeats({ navigation, route }) {
               <Text style={{ color: "purple", fontWeight: "800", fontSize: 18 }}>$XX.XX/ea</Text>
             </View>
           </TouchableOpacity>
-        </Pressable>
+        </Pressable>;
+        })}
       </View>
     </ScreenHolder>
   );
@@ -414,14 +415,26 @@ function App_Pay({ navigation, route }) {
         </View>
       </View>
       <View style={{ padding: 20 }}>
-        <Text>{'\n\n\n'}</Text>
-        <Text style={{ fontSize: 25, textAlign: "center", fontWeight: "600"}}>Payment Would Occur Here for {nTickets} Ticket{nTickets > 1 ? "s" : ""}.</Text>
-        <Text>{'\n\n\n'}</Text>
-        <Pressable onPress={() => {navigation.navigate("GetTicketFinished", route.params)}} style={{ backgroundColor: "green", padding: 12, borderRadius: 20 }}>
+        <Text>{'\n'}</Text>
+        <View style={{ paddingVertical: 25, borderBottomWidth: 1 }}>
+          <Text style={{ fontWeight: "800", fontSize: 20, paddingVertical: 10 }}>Payment Method(s):</Text>
+          <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", paddingTop: 10 }}>
+            <Image source={require('./assets/visa.png')} style={{ width: 130, height: 80 }} />
+            <Text style={{ flex: 1, fontSize: 17, fontWeight: "600", textAlign: "center" }}>Visa *-XXX</Text>
+          </TouchableOpacity>
+        </View>
+        <View>
+          <View style={{ flexDirection: "row", paddingVertical: 20, justifyContent: "space-around" }}>
+            <Text style={{ fontWeight: "800", fontSize: 20 }}>Total:</Text>
+            <Text style={{ fontWeight: "800", fontSize: 20 }}>$XX.XX</Text>
+          </View>
+        </View>
+        <Pressable onPress={() => {navigation.navigate("GetTicketFinished", route.params)}} style={{ backgroundColor: "green", padding: 10, borderRadius: 10 }}>
           <TouchableOpacity>
-            <Text style={{ color: "white", fontSize: 25, textAlign: "center", fontWeight: "600" }}>Place Order</Text>
+            <Text style={{ color: "white", fontSize: 20, textAlign: "center", fontWeight: "600" }}>Place Order</Text>
           </TouchableOpacity>
         </Pressable>
+        <Text style={{ paddingVertical: 2, fontWeight: "700", paddingVertical: 20 }}>*Conditions may apply, view our Terms of Use.</Text>
       </View>
     </ScreenHolder>
   );
@@ -467,7 +480,7 @@ function App_GetTicketFinished({ navigation, route }) {
         <Text>{'\n'}</Text>
         <Text style={{ fontSize: 20, textAlign: "justify" }}>If a ticket holder wishes to use COO to ensure compliance with the event's health requirements, simply navigate to my "My Events" tab.</Text>
         <Text>{'\n'}</Text>
-        <Pressable style={{ backgroundColor: "black", padding: 10, borderRadius: 20 }}>
+        <Pressable style={{ backgroundColor: "black", padding: 10, borderRadius: 20 }} onPress={ () => { EVENTS.push({ name: event.name, count: nTickets }); navigation.navigate("My Events") } }>
           <TouchableOpacity>
             <Text style={{ fontSize: 25, color: "white", textAlign: "center" }}>View your Ticket(s) & COO</Text>
           </TouchableOpacity>
@@ -512,11 +525,122 @@ function App_PrivacyPolicy({ navigation, route }) {
 }
 
 function App_MyEvents({ navigation }) {
+
+  // TODO: USE GLOBAL STATE
+  TICKETS = [ { name: "The Rolling Stones Concert", count: 2 } ]
+
   return (
     <ScreenHolder navigation={navigation}>
-      <Text>My Events</Text>
+      <View style={{ height: 48,
+                     width: "100%",
+                     backgroundColor: "#1F262D",
+                     display: "flex",
+                     flexDirection: "row",
+                     alignItems: "center",
+                     paddingHorizontal: 10,
+                     justifyContent: "center"
+      }}>
+        <Text style={{ color: "#FFFFFF", fontSize: 20, fontWeight: "800" }}>My Events</Text>
+      </View>
+      <View style={{ paddingVertical: 20, paddingHorizontal: 10 }}>
+        <Text style={{ fontSize: 20, fontWeight: "800" }}>Your Ticket(s)</Text>
+        <View style={{ paddingVertical: 20 }}>
+          {TICKETS.map((t, i) => {
+            let event    = EVENTS.find((e) => t.name == e.name);
+            let category = CATEGORIES.find((c) => c.name == event.category);
+
+            return (
+              <View key={i}>
+                <Pressable style={{ paddingHorizontal: 15,
+                                    width: "100%",
+                                    height: 120
+                }} onPress={ () => { navigation.navigate("Tickets", { event, category, ticketID: i }) } }>
+                  <View flex style={{ borderBottomWidth: 0.5,
+                                      flexDirection: "row",
+                                      justifyContent: "space-around",
+                                      alignItems: "center",
+                  }}>
+                    <Image resizeMethod="scale" style={{
+                      width: "40%",
+                      height: undefined,
+                      aspectRatio: 16.0/9.0,
+                      borderRadius: 10,
+                      borderColor: "black"
+                    }} source={category.backgroundImageRes} />
+                    <View style={{ width: "60%",
+                                  height: 100,
+                                  justifyContent: "center"
+                    }}>
+                      <Text style={{ color: "#026CDF",
+                                    fontSize: 20,
+                                    fontWeight: "700",
+                                    paddingVertical: 5,
+                                    paddingLeft: 10
+                      }}>{event.name}</Text>
+                      <View style={{ paddingVertical: 5, paddingLeft: 10 }}>
+                        <Text text50>{t.count} Ticket(s)</Text>
+                        <View style={{ paddingVertical: 2 }}></View>
+                        <Text text50>{ event.location }</Text>
+                      </View>
+                    </View>
+                  </View>
+                </Pressable>
+              </View>
+            )
+          })}
+        </View>
+      </View>
     </ScreenHolder>
   );
+}
+
+function App_Tickets({ navigation, route }) {
+  let tickets  = TICKETS[route.params.ticketID];
+  let category = route.params.category;
+
+  return (
+    <ScreenHolder navigation={navigation}>
+      <View style={{ height: 48,
+                     width: "100%",
+                     backgroundColor: "#1F262D",
+                     display: "flex",
+                     flexDirection: "row",
+                     alignItems: "center",
+                     paddingHorizontal: 10,
+                     justifyContent: "space-between"
+      }}>
+        <Ionicons name="chevron-back-outline" size={35} color="white" />
+        <Text style={{ flex: 1, textAlign: "center", color: "#FFFFFF", fontSize: 20, fontWeight: "800" }}>{route.params.event.name}</Text>
+      </View>
+      <View style={{ backgroundColor: "#1F262D",
+                     paddingHorizontal: 20,
+                     paddingVertical: 10
+      }}>
+        <Image style={{ width: "100%",
+                        height: undefined,
+                        aspectRatio: 16.0/9.0 }} source={category.backgroundImageRes} />
+        <View style={{ paddingVertical: 10 }}></View>
+        <Text style={{ color: "#FFFFFF", fontSize: 30, fontWeight: "800" }}>{category.name}</Text>
+        <View style={{ paddingVertical: 2 }}></View>
+        <Text style={{ color: "#FFFFFF", fontSize: 30, fontWeight: "300" }}>Tickets</Text>
+        <View style={{ paddingVertical: 10 }}></View>
+      </View>
+      <View style={{ paddingHorizontal: 10, paddingVertical: 20 }}>
+        <Carousel
+          data={[0, 1, 2, 3]}
+          renderItem={({e, i}) => {
+            return (
+              <View style={{ backgroundColor: "red", width: 400, height: 400 }}>
+                <Text style={{fontSize: 40}}>Communist {i}</Text>
+              </View>
+            )
+          }}
+          sliderWidth={1000}
+          itemWidth={1000}
+        />
+      </View>
+    </ScreenHolder>
+  )
 }
 
 function App_Footer({ navigation }) {
