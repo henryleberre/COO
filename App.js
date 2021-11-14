@@ -7,6 +7,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import Emoji    from 'react-native-emoji';
 import Carousel from 'react-native-snap-carousel';
+import QRCode   from 'react-native-qrcode-svg';
 
 const APP_NAME = "COO";
 
@@ -311,7 +312,9 @@ function App_ComplianceConsent({ navigation, route }) {
           <View>
             <Text style={{ paddingTop: 10 }}>- Bring physical documentation to show prior to entry at "{event.covidLocation}"</Text>
             <Text style={{ paddingTop: 10 }}>- Use our free service "COO" embedded within this application to upload their documents. Feel free to checkout its privacy policy beforehand. A ticket master account is required for any ticket holder that chooses to use COO.</Text>
-            <Text style={{ paddingTop: 20, fontWeight: "800", textAlign: "center", textDecorationLine: "underline" }}>COO's Privacy Policy</Text>
+            <Pressable onPress={() => { navigation.navigate("Privacy Policy", route.params) }}>
+              <Text style={{ paddingTop: 20, fontWeight: "800", textAlign: "center", textDecorationLine: "underline" }}>COO's Privacy Policy</Text>
+            </Pressable>
           </View>
         </View>
         <Button onPress={() => {navigation.navigate("SelectSeats", route.params)}} title="I agree to use one of these options"></Button>
@@ -420,7 +423,7 @@ function App_Pay({ navigation, route }) {
           <Text style={{ fontWeight: "800", fontSize: 20, paddingVertical: 10 }}>Payment Method(s):</Text>
           <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", paddingTop: 10 }}>
             <Image source={require('./assets/visa.png')} style={{ width: 130, height: 80 }} />
-            <Text style={{ flex: 1, fontSize: 17, fontWeight: "600", textAlign: "center" }}>Visa *-XXX</Text>
+            <Text style={{ flex: 1, fontSize: 17, fontWeight: "600", textAlign: "center" }}>Visa *-XXX (Saved)</Text>
           </TouchableOpacity>
         </View>
         <View>
@@ -491,10 +494,11 @@ function App_GetTicketFinished({ navigation, route }) {
 }
 
 function App_PrivacyPolicy({ navigation, route }) {
-  const categoryID = route.params.categoryID;
-  const eventID    = route.params.eventID;
-
   let event = EVENTS[route.params.eventID];
+
+  if (event == undefined) {
+    event = route.params.event;
+  }
 
   return (
     <ScreenHolder navigation={navigation}>
@@ -518,7 +522,41 @@ function App_PrivacyPolicy({ navigation, route }) {
         </View>
       </View>
       <View style={{ padding: 15 }}>
-        <Text style={{ fontSize: 30, fontWeight: "800", textAlign: "center" }}>COO Privacy Policy</Text>
+        <Text style={{ fontSize: 30, fontWeight: "800", textAlign: "center" }}>COO's Privacy Policy</Text>
+      </View>
+      <View style={{ borderBottomWidth: 1, paddingVertical: 10, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+        <View style={{ flexDirection: "row" }}>
+          <View style={{ paddingLeft: 10 }}></View>
+          <TouchableOpacity>
+            <Pressable style={{ borderColor: "blue", borderWidth: 2, borderRadius: 5, padding: 10, flexDirection: "row", alignItems: "center" }}>
+              <Emoji name="us" style={{ fontSize: 25 }} />
+              <View style={{ paddingHorizontal: 2 }}></View>
+              <Text>English</Text>
+            </Pressable>
+          </TouchableOpacity>
+          <View style={{ paddingHorizontal: 10 }}></View>
+          <TouchableOpacity>
+            <Pressable style={{ borderWidth: 2, borderRadius: 5, padding: 10, flexDirection: "row", alignItems: "center" }}>
+              <Emoji name="fr" style={{ fontSize: 25 }} />
+              <View style={{ paddingHorizontal: 2 }}></View>
+              <Text>French</Text>
+            </Pressable>
+          </TouchableOpacity>
+        </View>
+        <View style={{ flexDirection: "row" }}>
+          <Pressable style={{ borderWidth: 2, borderRadius: 5, padding: 10, flexDirection: "row", alignItems: "center" }}>
+            <TouchableOpacity>
+              <Text style={{ fontSize: 30 }}>a</Text>
+            </TouchableOpacity>
+          </Pressable>
+          <View style={{ paddingHorizontal: 4 }}></View>
+          <Pressable style={{ borderWidth: 2, borderRadius: 5, padding: 10, flexDirection: "row", alignItems: "center" }}>
+            <TouchableOpacity>
+              <Text style={{ fontSize: 30 }}>A</Text>
+            </TouchableOpacity>
+          </Pressable>
+          <View style={{ paddingRight: 10 }}></View>
+        </View>
       </View>
     </ScreenHolder>
   );
@@ -527,7 +565,7 @@ function App_PrivacyPolicy({ navigation, route }) {
 function App_MyEvents({ navigation }) {
 
   // TODO: USE GLOBAL STATE
-  TICKETS = [ { name: "The Rolling Stones Concert", count: 2 } ]
+  TICKETS = [ { name: "The Rolling Stones Concert", count: 3 } ]
 
   return (
     <ScreenHolder navigation={navigation}>
@@ -594,10 +632,23 @@ function App_MyEvents({ navigation }) {
   );
 }
 
+// Copied from Stackoverflow
+function makeid(length) {
+  var result           = '';
+  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var charactersLength = characters.length;
+  for ( var i = 0; i < length; i++ ) {
+    result += characters.charAt(Math.floor(Math.random() * 
+charactersLength));
+ }
+ return result;
+}
+
 function App_Tickets({ navigation, route }) {
   let tickets  = TICKETS[route.params.ticketID];
   let category = route.params.category;
-
+  let event    = route.params.event;
+  
   return (
     <ScreenHolder navigation={navigation}>
       <View style={{ height: 48,
@@ -625,19 +676,60 @@ function App_Tickets({ navigation, route }) {
         <Text style={{ color: "#FFFFFF", fontSize: 30, fontWeight: "300" }}>Tickets</Text>
         <View style={{ paddingVertical: 10 }}></View>
       </View>
-      <View style={{ paddingHorizontal: 10, paddingVertical: 20 }}>
+      <View style={{ paddingVertical: 20, flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
         <Carousel
-          data={[0, 1, 2, 3]}
+          data={[...Array(tickets.count).keys()]}
           renderItem={({e, i}) => {
             return (
-              <View style={{ backgroundColor: "red", width: 400, height: 400 }}>
-                <Text style={{fontSize: 40}}>Communist {i}</Text>
+              <View style={{ width: 0.75*Dimensions.get('window').width,
+                             borderRadius: 20,
+                             borderWidth: 2,
+              }}>
+                <View style={{ justifyContent: "center",
+                               alignItems: "center",
+                               height: 0.75*Dimensions.get('window').width
+                }}>
+                  <QRCode size={0.75*0.75*Dimensions.get('window').width} value={makeid(30)} />
+                </View>
+                <View style={{ paddingHorizontal: 20, paddingBottom: 20 }}>
+                  <Text style={{ fontSize: 20, fontWeight: "700", textAlign: "center" }}>Health Requirements</Text>
+                  <View style={{ paddingTop: 10 }}>
+                    <Button title="Use COO (Recommended)" />
+                    <Button title="Send e-mail to a participant" />
+                    <Button title="Bring your documents" />
+                    <Button title="This ticket is for a child" />
+                  </View>
+                </View>
               </View>
             )
           }}
-          sliderWidth={1000}
-          itemWidth={1000}
+          layout="default"
+          sliderWidth={Dimensions.get('window').width}
+          itemWidth={0.75*Dimensions.get('window').width}
         />
+      </View>
+      <View style={{ paddingHorizontal: 20, paddingVertical: 20 }}>
+        <View style={{ paddingTop: 10, paddingBottom: 20 }}>
+          <Text style={{ fontSize: 22, fontWeight: "700" }}>Event Conditions</Text>
+          <Text style={{ paddingTop: 10 }}>To attend this event, ticket holders 13 and older must:</Text>
+          <View>
+            <Text style={{ paddingTop: 10 }}>- Be fully vaccinated against Covid-19</Text>
+            <Text style={{ paddingTop: 10 }}>- or Have taken a negative test for Covid-19, a maximum of 72h prior to the start of the event</Text>
+            <Text style={{ paddingTop: 10 }}>- or Have been tested positive within less than 180 days and more than 14</Text>
+            <Text style={{ paddingTop: 10 }}>- or Have this requirement waived at the discretion of the event organizers.</Text>
+          </View>
+        </View>
+        <View style={{ paddingTop: 10, paddingBottom: 20 }}>
+          <Text style={{ fontSize: 22, fontWeight: "700" }}>Compliance</Text>
+          <Text style={{ paddingTop: 10 }}>To show proof they fit the health requirements, each ticket holder must choose either:</Text>
+          <View>
+            <Text style={{ paddingTop: 10 }}>- Bring physical documentation to show prior to entry at "{event.covidLocation}"</Text>
+            <Text style={{ paddingTop: 10 }}>- Use our free service "COO" embedded within this application to upload their documents. Feel free to checkout its privacy policy beforehand. A ticket master account is required for any ticket holder that chooses to use COO.</Text>
+            <Pressable onPress={() => { navigation.navigate("Privacy Policy", route.params) }}>
+              <Text style={{ paddingTop: 20, fontWeight: "800", textAlign: "center", textDecorationLine: "underline" }}>COO's Privacy Policy</Text>
+            </Pressable>
+          </View>
+        </View>
       </View>
     </ScreenHolder>
   )
