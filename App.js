@@ -1,10 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Fragment, useState } from 'react';
-import { Entypo, Foundation, MaterialIcons, Ionicons, AntDesign } from '@expo/vector-icons'; 
+import { Entypo, Foundation, MaterialIcons, Ionicons, AntDesign, Fontisto, MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { Text, View, SafeAreaView, ScrollView, Image, Dimensions, Pressable, Button } from 'react-native';
 import { NavigationContainer, useNavigationState } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import Emoji    from 'react-native-emoji';
 import Carousel from 'react-native-snap-carousel';
 import QRCode   from 'react-native-qrcode-svg';
@@ -24,17 +24,23 @@ let PAGES = [
   { bShow: false, icon: () => {},                                                                             title: "SelectSeats",            component: App_SelectSeats },
   { bShow: false, icon: () => {},                                                                             title: "Pay",                    component: App_Pay},
   { bShow: false, icon: () => {},                                                                             title: "GetTicketFinished",      component: App_GetTicketFinished },
-  { bShow: false, icon: () => {},                                                                             title: "Tickets",                component: App_Tickets }
+  { bShow: false, icon: () => {},                                                                             title: "Tickets",                component: App_Tickets },
+  { bShow: false, icon: () => {},                                                                             title: "OptinCOO",               component: Aop_OptinCOO },
+  { bShow: false, icon: () => {},                                                                             title: "COO_Main",               component: App_COO_Main },
+  { bShow: false, icon: () => {},                                                                             title: "AddVaccine",             component: App_AddVaccine },
+  { bShow: false, icon: () => {},                                                                             title: "ProcessRequest",         component: App_ProcessRequest }
 ];
 
 const CATEGORIES = [
   { name: "The Rolling Stones", backgroundImageRes: require("./assets/the-rolling-stones.jpg"), rating: 4.8 },
-  { name: "Les Inconnus",       backgroundImageRes: require("./assets/les-inconnus.jpg"),       rating: 4.5 }
+  { name: "Les Inconnus",       backgroundImageRes: require("./assets/les-inconnus.jpg"),       rating: 4.5 },
+  { name: "Radiohead",          backgroundImageRes: require("./assets/radiohead.jpg"),          rating: 4.6 }
 ];
 
 let EVENTS = [
   { category: "The Rolling Stones", name: "The Rolling Stones Concert", date: { day: 17, month: "Nov", dayName: "Wed", time: "7:30pm" }, location: "Grant Field - Atlanta, GA",           covidLocation: "The Box Office", seatImage: require('./assets/bobby-dodd-stadium.jpg'), operation: "The Rolling Stones - No Filter Tour 2021" },
-  { category: "Les Inconnus",       name: "Les Inconnus Concert",       date: { day: 17, month: "Nov", dayName: "Wed", time: "7:30pm" }, location: "Mercedes-Benz Stadium - Atlanta, GA", covidLocation: "The Box Office", seatImage: require('./assets/bobby-dodd-stadium.jpg'), operation: "Les Inconnus - Le Retour" }
+  { category: "Les Inconnus",       name: "Les Inconnus Concert",       date: { day: 17, month: "Nov", dayName: "Wed", time: "7:30pm" }, location: "Mercedes-Benz Stadium - Atlanta, GA", covidLocation: "The Box Office", seatImage: require('./assets/bobby-dodd-stadium.jpg'), operation: "Les Inconnus - Le Retour" },
+  { category: "Radiohead",          name: "Radiohead Concert",          date: { day: 27, month: "Nov", dayName: "Sat", time: "7:30pm" }, location: "Grant Field - Atlanta, GA",          covidLocation: "The Box Office", seatImage: require('./assets/bobby-dodd-stadium.jpg'), operation: "Radiohead - World Tour 2021" }
 ];
 
 let TICKETS = [  ];
@@ -169,11 +175,19 @@ function App_Category({ navigation, route }) {
       </View>
       <View style={{ padding: 20 }}>
         {categoryEvents.map((e, i) => {
+          let eventID = 0;
+          for (let a of EVENTS) {
+            if (a.name == e.name) {
+              break;
+            }
+            eventID++;
+          }
+
           return (
             <TouchableOpacity key={i} style={{ paddingBottom: 10,
                                                borderBottomWidth: 0.5,
                                                flexDirection: "row"
-            }} onPress={() => { navigation.navigate("EventConditions", { categoryID: route.params, eventID: i }) }}>
+            }} onPress={() => { navigation.navigate("EventConditions", { categoryID: route.params, eventID: eventID }) }}>
               <View style={{ flex: 1 }}>
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <Text style={{ fontSize: 17, fontWeight: "600", color: "purple" }}>{e.date.month} {e.date.day}</Text>
@@ -310,8 +324,8 @@ function App_ComplianceConsent({ navigation, route }) {
           <Text style={{ fontSize: 22, fontWeight: "700" }}>Compliance</Text>
           <Text style={{ paddingTop: 10 }}>To show proof they fit the health requirements, each ticket holder must choose either:</Text>
           <View>
-            <Text style={{ paddingTop: 10 }}>- Bring physical documentation to show prior to entry at "{event.covidLocation}"</Text>
-            <Text style={{ paddingTop: 10 }}>- Use our free service "COO" embedded within this application to upload their documents. Feel free to checkout its privacy policy beforehand. A ticket master account is required for any ticket holder that chooses to use COO.</Text>
+            <Text style={{ paddingTop: 10 }}>- Bring physical documentation to show prior to entry at "{event.covidLocation}". Please address your questions and concerns to the venue at (XXX) XXX-XXXX.</Text>
+            <Text style={{ paddingTop: 10 }}>- Use our free service "COO" embedded within this application to upload their documents. Feel free to checkout its privacy policy beforehand. A ticket master account is required for any ticket holder that chooses to use COO. COO is reachable at (XXX) XXX-XXXX.</Text>
             <Pressable onPress={() => { navigation.navigate("Privacy Policy", route.params) }}>
               <Text style={{ paddingTop: 20, fontWeight: "800", textAlign: "center", textDecorationLine: "underline" }}>COO's Privacy Policy</Text>
             </Pressable>
@@ -319,7 +333,7 @@ function App_ComplianceConsent({ navigation, route }) {
         </View>
         <Button onPress={() => {navigation.navigate("SelectSeats", route.params)}} title="I agree to use one of these options"></Button>
         <Text>{'\n'}</Text>
-        <Text style={{ textAlign: "center", padding: 10 }}>Clicking on the above button does not constitute agreeing to COO's Privacy Policy.</Text>
+        <Text style={{ textAlign: "center", padding: 10 }}>Clicking on the above button does not constitute agreeing to COO's Privacy Policy. You can read it to better understand your options before buying your ticket(s). You have the option to opt-in to use COO after purchase.</Text>
         <Text>{'\n\n'}</Text>
       </View>
     </ScreenHolder>
@@ -479,13 +493,13 @@ function App_GetTicketFinished({ navigation, route }) {
         <Text>{'\n'}</Text>
         <Ionicons style={{ alignSelf: "center" }} name="medical" size={80} color="red" />
         <Text>{'\n'}</Text>
-        <Text style={{ fontSize: 25, textAlign: "center", fontWeight: "600"}}>Using COO - If you want</Text>
+        <Text style={{ fontSize: 25, textAlign: "center", fontWeight: "600"}}>Health Verification Reminder</Text>
         <Text>{'\n'}</Text>
-        <Text style={{ fontSize: 20, textAlign: "justify" }}>If a ticket holder wishes to use COO to ensure compliance with the event's health requirements, simply navigate to my "My Events" tab.</Text>
+        <Text style={{ fontSize: 20, textAlign: "justify" }}>Please remember to satisfy the health requirements in the "My Events" tab at least a few days before attending the event. Click the button bellow to get started!</Text>
         <Text>{'\n'}</Text>
         <Pressable style={{ backgroundColor: "black", padding: 10, borderRadius: 20 }} onPress={ () => { EVENTS.push({ name: event.name, count: nTickets }); navigation.navigate("My Events") } }>
           <TouchableOpacity>
-            <Text style={{ fontSize: 25, color: "white", textAlign: "center" }}>View your Ticket(s) & COO</Text>
+            <Text style={{ fontSize: 25, color: "white", textAlign: "center" }}>View Your Tickets</Text>
           </TouchableOpacity>
         </Pressable>
       </View>
@@ -493,37 +507,9 @@ function App_GetTicketFinished({ navigation, route }) {
   );
 }
 
-function App_PrivacyPolicy({ navigation, route }) {
-  let event = EVENTS[route.params.eventID];
-
-  if (event == undefined) {
-    event = route.params.event;
-  }
-
+function App_PrivacyPolicy_BODY({ event }) {
   return (
-    <ScreenHolder navigation={navigation}>
-      <View style={{ height: 48,
-                     width: "100%",
-                     backgroundColor: "#1F262D",
-                     display: "flex",
-                     flexDirection: "row",
-                     alignItems: "center",
-                     paddingHorizontal: 10,
-                     justifyContent: "space-between"
-      }}>
-        <TouchableOpacity onPress={() => {navigation.goBack()}}>
-          <Ionicons name="chevron-back-outline" size={35} color="white" />
-        </TouchableOpacity>
-        <Text style={{ fontSize: 17, color: "#FFFFFF"}}>{event.name}</Text>
-        <View style={{ flexDirection: "row" }}>
-          <TouchableOpacity><Entypo name="heart-outlined" size={25} color="white" /></TouchableOpacity>
-          <View style={{ paddingHorizontal: 10 }}></View>
-          <TouchableOpacity><Entypo name="share-alternative" size={25} color="white" /></TouchableOpacity>
-        </View>
-      </View>
-      <View style={{ padding: 15 }}>
-        <Text style={{ fontSize: 30, fontWeight: "800", textAlign: "center" }}>COO's Privacy Policy</Text>
-      </View>
+    <>
       <View style={{ borderBottomWidth: 1, paddingVertical: 10, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <View style={{ flexDirection: "row" }}>
           <View style={{ paddingLeft: 10 }}></View>
@@ -558,6 +544,45 @@ function App_PrivacyPolicy({ navigation, route }) {
           <View style={{ paddingRight: 10 }}></View>
         </View>
       </View>
+      <View style={{ padding: 20 }}>
+        <Text style={{ fontSize: 20 }}>Privacy Policy Text Goes Here.</Text>
+      </View>
+    </>
+  );
+}
+
+function App_PrivacyPolicy({ navigation, route }) {
+  let event = EVENTS[route.params.eventID];
+
+  if (event == undefined) {
+    event = route.params.event;
+  }
+
+  return (
+    <ScreenHolder navigation={navigation}>
+      <View style={{ height: 48,
+                     width: "100%",
+                     backgroundColor: "#1F262D",
+                     display: "flex",
+                     flexDirection: "row",
+                     alignItems: "center",
+                     paddingHorizontal: 10,
+                     justifyContent: "space-between"
+      }}>
+        <TouchableOpacity onPress={() => {navigation.goBack()}}>
+          <Ionicons name="chevron-back-outline" size={35} color="white" />
+        </TouchableOpacity>
+        <Text style={{ fontSize: 17, color: "#FFFFFF"}}>{event.name}</Text>
+        <View style={{ flexDirection: "row" }}>
+          <TouchableOpacity><Entypo name="heart-outlined" size={25} color="white" /></TouchableOpacity>
+          <View style={{ paddingHorizontal: 10 }}></View>
+          <TouchableOpacity><Entypo name="share-alternative" size={25} color="white" /></TouchableOpacity>
+        </View>
+      </View>
+      <View style={{ padding: 15 }}>
+        <Text style={{ fontSize: 30, fontWeight: "800", textAlign: "center" }}>COO's Privacy Policy</Text>
+      </View>
+      <App_PrivacyPolicy_BODY event={event} />
     </ScreenHolder>
   );
 }
@@ -565,7 +590,10 @@ function App_PrivacyPolicy({ navigation, route }) {
 function App_MyEvents({ navigation }) {
 
   // TODO: USE GLOBAL STATE
-  TICKETS = [ { name: "The Rolling Stones Concert", count: 3 } ]
+  TICKETS = [
+    { name: "The Rolling Stones Concert", count: 1 },
+    { name: "Radiohead Concert",          count: 2 }
+  ]
 
   return (
     <ScreenHolder navigation={navigation}>
@@ -694,10 +722,11 @@ function App_Tickets({ navigation, route }) {
                 <View style={{ paddingHorizontal: 20, paddingBottom: 20 }}>
                   <Text style={{ fontSize: 20, fontWeight: "700", textAlign: "center" }}>Health Requirements</Text>
                   <View style={{ paddingTop: 10 }}>
-                    <Button title="Use COO (Recommended)" />
+                    <Button onPress={() => { navigation.navigate("OptinCOO", { event }); }} title="Use COO (Recommended)" />
                     <Button title="Send e-mail to a participant" />
                     <Button title="Bring your documents" />
                     <Button title="This ticket is for a child" />
+                    <Button title="I am exempt" />
                   </View>
                 </View>
               </View>
@@ -723,13 +752,209 @@ function App_Tickets({ navigation, route }) {
           <Text style={{ fontSize: 22, fontWeight: "700" }}>Compliance</Text>
           <Text style={{ paddingTop: 10 }}>To show proof they fit the health requirements, each ticket holder must choose either:</Text>
           <View>
-            <Text style={{ paddingTop: 10 }}>- Bring physical documentation to show prior to entry at "{event.covidLocation}"</Text>
-            <Text style={{ paddingTop: 10 }}>- Use our free service "COO" embedded within this application to upload their documents. Feel free to checkout its privacy policy beforehand. A ticket master account is required for any ticket holder that chooses to use COO.</Text>
+            <Text style={{ paddingTop: 10 }}>- Bring physical documentation to show prior to entry at "{event.covidLocation}". Please address your questions and concerns to the venue at (XXX) XXX-XXXX.</Text>
+            <Text style={{ paddingTop: 10 }}>- Use our free service "COO" embedded within this application to upload their documents. Feel free to checkout its privacy policy beforehand. A ticket master account is required for any ticket holder that chooses to use COO. COO is reachable at (XXX) XXX-XXXX.</Text>
             <Pressable onPress={() => { navigation.navigate("Privacy Policy", route.params) }}>
               <Text style={{ paddingTop: 20, fontWeight: "800", textAlign: "center", textDecorationLine: "underline" }}>COO's Privacy Policy</Text>
             </Pressable>
           </View>
         </View>
+      </View>
+    </ScreenHolder>
+  )
+}
+
+function Aop_OptinCOO({ navigation, route }) {
+  let arr = [
+    {
+      title: "What's COO?",
+      body: <Text style={{ paddingHorizontal: 20, fontSize: 20 }}>COO is an awesome app. [INSERT DESCRIPTION HERE]</Text>,
+      buttonText: "Next"
+    },
+    {
+      title: "COO's Privacy Policy",
+      body: <App_PrivacyPolicy_BODY event={route.params.event}></App_PrivacyPolicy_BODY>,
+      buttonText: "I Agree"
+    }
+  ]
+
+  let [state, setState] = useState(0);
+
+  return (
+    <ScreenHolder navigation={navigation}>
+      <View style={{ height: 48,
+                     width: "100%",
+                     backgroundColor: "#1F262D",
+                     display: "flex",
+                     flexDirection: "row",
+                     alignItems: "center",
+                     paddingHorizontal: 10,
+                     justifyContent: "space-between"
+      }}>
+        <Ionicons name="chevron-back-outline" size={35} color="white" />
+        <Text style={{ flex: 1, textAlign: "center", color: "#FFFFFF", fontSize: 20, fontWeight: "800" }}>Use COO</Text>
+      </View>
+      <Text style={{ padding: 20, fontSize: 30, fontWeight: "800"}}>{arr[state].title}</Text>
+      {arr[state].body}
+      <Pressable onPress={() => { if (state == 0) { setState(1); } else { navigation.navigate("COO_Main"); } }} style={{ margin: 20, borderRadius: 30, padding: 10, backgroundColor: "black" }}>
+        <TouchableOpacity>
+          <Text style={{ color: "white", fontSize: 25, textAlign: "center" }}>{arr[state].buttonText}</Text>
+        </TouchableOpacity>
+      </Pressable>
+    </ScreenHolder>
+  )
+}
+
+function App_COO_Main({ navigation }) {
+  return (
+    <ScreenHolder navigation={navigation}>
+      <View style={{ height: 48,
+                     width: "100%",
+                     backgroundColor: "#1F262D",
+                     display: "flex",
+                     flexDirection: "row",
+                     alignItems: "center",
+                     paddingHorizontal: 10,
+                     justifyContent: "space-between"
+      }}>
+        <Ionicons name="chevron-back-outline" size={35} color="white" />
+        <Text style={{ flex: 1, textAlign: "center", color: "#FFFFFF", fontSize: 20, fontWeight: "800" }}>COO Dashboard</Text>
+      </View>
+      <View style={{ padding: 15 }}>
+        <Text style={{ paddingVertical: 20, fontSize: 25 }}>Choose from one of the following</Text>
+        <View style={{ padding: 15, borderWidth: 1, borderRadius: 10 }}>
+          <View style={{ flexDirection: "row" }}>
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: 10 }}>
+              <Text style={{ fontSize: 20, textAlign: "center" }}>Vaccine(s)</Text>
+              <View style={{ paddingVertical: 10 }}></View>
+              <Fontisto name="injection-syringe" size={35} color="black" />
+            </View>
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: 10 }}>
+              <Text style={{ fontSize: 20 }}>Status</Text>
+              <View style={{ paddingVertical: 10 }}></View>
+              <MaterialIcons name="error" size={35} color="black" />
+            </View>
+          </View>
+          <View style={{ paddingVertical: 10}}></View>
+          <Pressable onPress={() => { navigation.navigate("AddVaccine"); }} style={{ backgroundColor: "black", padding: 10, borderRadius: 15 }}>
+            <TouchableOpacity>
+              <Text style={{ color: "white", textAlign: "center", fontSize: 20, fontWeight: "700" }}>Add</Text>
+            </TouchableOpacity>
+          </Pressable>
+        </View>
+        
+        <View style={{ paddingVertical: 10 }}></View>
+
+        <View style={{ padding: 15, borderWidth: 1, borderRadius: 10 }}>
+          <View style={{ flexDirection: "row" }}>
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: 10 }}>
+              <Text style={{ fontSize: 20, textAlign: "center" }}>(Negative) Covid Test(s)</Text>
+              <View style={{ paddingVertical: 10 }}></View>
+              <MaterialCommunityIcons name="test-tube" size={35} color="black" />
+            </View>
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: 10 }}>
+              <Text style={{ fontSize: 20 }}>Status</Text>
+              <View style={{ paddingVertical: 10 }}></View>
+              <MaterialIcons name="error" size={35} color="black" />
+            </View>
+          </View>
+          <View style={{ paddingVertical: 10}}></View>
+          <Pressable style={{ backgroundColor: "black", padding: 10, borderRadius: 15 }}>
+            <TouchableOpacity>
+              <Text style={{ color: "white", textAlign: "center", fontSize: 20, fontWeight: "700" }}>Add</Text>
+            </TouchableOpacity>
+          </Pressable>
+        </View>
+
+        <View style={{ paddingVertical: 10 }}></View>
+
+        <View style={{ padding: 15, borderWidth: 1, borderRadius: 10 }}>
+          <View style={{ flexDirection: "row" }}>
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: 10 }}>
+              <Text style={{ fontSize: 20, textAlign: "center" }}>Antibody Test(s)</Text>
+              <View style={{ paddingVertical: 10 }}></View>
+              <MaterialCommunityIcons name="test-tube" size={35} color="black" />
+            </View>
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: 10 }}>
+              <Text style={{ fontSize: 20 }}>Status</Text>
+              <View style={{ paddingVertical: 10 }}></View>
+              <MaterialIcons name="error" size={35} color="black" />
+            </View>
+          </View>
+          <View style={{ paddingVertical: 10}}></View>
+          <Pressable style={{ backgroundColor: "black", padding: 10, borderRadius: 15 }}>
+            <TouchableOpacity>
+              <Text style={{ color: "white", textAlign: "center", fontSize: 20, fontWeight: "700" }}>Add</Text>
+            </TouchableOpacity>
+          </Pressable>
+        </View>
+
+      </View>
+      <View style={{ paddingVertical: 20 }}></View>
+    </ScreenHolder>
+  )
+}
+
+function App_AddVaccine({ navigation }) {
+  return (
+    <ScreenHolder navigation={navigation}>
+      <View style={{ height: 48,
+                     width: "100%",
+                     backgroundColor: "#1F262D",
+                     display: "flex",
+                     flexDirection: "row",
+                     alignItems: "center",
+                     paddingHorizontal: 10,
+                     justifyContent: "space-between"
+      }}>
+        <Ionicons name="chevron-back-outline" size={35} color="white" />
+        <Text style={{ flex: 1, textAlign: "center", color: "#FFFFFF", fontSize: 20, fontWeight: "800" }}>COO - Add Vaccine</Text>
+      </View>
+      <View style={{ padding: 20 }}>
+        <Text style={{ fontSize: 20 }}>To add proof of your vaccination, please fill out the following form.</Text>
+        <View style={{ paddingVertical: 10 }}></View>
+        <View style={{ flexDirection: "row", padding: 15, borderRadius: 15, borderWidth: 1, justifyContent: "center", alignItems: "center" }}>
+          <TouchableOpacity>
+            <Ionicons name="add-circle" size={65} color="black" />
+          </TouchableOpacity>
+          <Text style={{ flex: 1, textAlign: "center", fontSize: 17 }}>Please upload a picture of your vaccination card.</Text>
+        </View>
+        <View style={{ paddingVertical: 10 }}></View>
+        <Text style={{ fontSize: 20, paddingVertical: 10 }}>Date of First Injection (mm/dd/yy)</Text>
+        <TextInput style={{ height: 40,
+                            borderWidth: 1,
+                            padding: 10, }} placeholder={"Date of First Injection (mm/dd/yy)"}></TextInput>
+        <Text style={{ fontSize: 20, paddingVertical: 10 }}>Date of Second Injection (mm/dd/yy)</Text>
+        <TextInput style={{ height: 40,
+                            borderWidth: 1,
+                            padding: 10, }} placeholder={"Date of Second Injection (mm/dd/yy)"}></TextInput>
+        <Pressable onPress={() => { navigation.navigate("ProcessRequest"); }} style={{ backgroundColor: "black", padding: 10, marginVertical: 30, borderRadius: 15 }}>
+          <TouchableOpacity>
+            <Text style={{ color: "white", fontSize: 20, fontWeight: "700", textAlign: "center" }}>Submit for Verification</Text>
+          </TouchableOpacity>
+        </Pressable>
+      </View>
+    </ScreenHolder>
+  )
+}
+
+function App_ProcessRequest({ navigation }) {
+  return (
+    <ScreenHolder navigation={navigation}>
+      <View style={{ height: 48,
+                     width: "100%",
+                     backgroundColor: "#1F262D",
+                     display: "flex",
+                     flexDirection: "row",
+                     alignItems: "center",
+                     paddingHorizontal: 10,
+                     justifyContent: "space-between"
+      }}>
+        <Ionicons name="chevron-back-outline" size={35} color="white" />
+        <Text style={{ flex: 1, textAlign: "center", color: "#FFFFFF", fontSize: 20, fontWeight: "800" }}>COO - Add Vaccine - Complete</Text>
+      </View>
+      <View style={{ paddingHorizontal: 15 }}>
+        <Text style={{ paddingVertical: 200, fontSize: 25, fontWeight: "600", textAlign: "center" }}>Your Upload was successful. We will notify you when your verification is complete via email. When it is, you can access your health verified ticket.</Text>
       </View>
     </ScreenHolder>
   )
