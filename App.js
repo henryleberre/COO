@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Fragment, useState } from 'react';
 import { Entypo, Foundation, MaterialIcons, Ionicons, AntDesign, Fontisto, MaterialCommunityIcons } from '@expo/vector-icons'; 
-import { Text, View, SafeAreaView, ScrollView, Image, Dimensions, Pressable, Button } from 'react-native';
+import { Text, View, SafeAreaView, ScrollView, Image, Dimensions, Pressable, Button, Touchable } from 'react-native';
 import { NavigationContainer, useNavigationState } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
@@ -28,7 +28,8 @@ let PAGES = [
   { bShow: false, icon: () => {},                                                                             title: "OptinCOO",               component: Aop_OptinCOO },
   { bShow: false, icon: () => {},                                                                             title: "COO_Main",               component: App_COO_Main },
   { bShow: false, icon: () => {},                                                                             title: "AddVaccine",             component: App_AddVaccine },
-  { bShow: false, icon: () => {},                                                                             title: "ProcessRequest",         component: App_ProcessRequest }
+  { bShow: false, icon: () => {},                                                                             title: "ProcessRequest",         component: App_ProcessRequest },
+  { bShow: false, icon: () => {},                                                                             title: "AddNegativeTest",        component: App_AddNegativeTest }
 ];
 
 const CATEGORIES = [
@@ -859,7 +860,7 @@ function App_COO_Main({ navigation }) {
             </View>
           </View>
           <View style={{ paddingVertical: 10}}></View>
-          <Pressable style={{ backgroundColor: "black", padding: 10, borderRadius: 15 }}>
+          <Pressable onPress={() => { navigation.navigate("AddNegativeTest"); }} style={{ backgroundColor: "black", padding: 10, borderRadius: 15 }}>
             <TouchableOpacity>
               <Text style={{ color: "white", textAlign: "center", fontSize: 20, fontWeight: "700" }}>Add</Text>
             </TouchableOpacity>
@@ -933,6 +934,47 @@ function App_AddVaccine({ navigation }) {
             <Text style={{ color: "white", fontSize: 20, fontWeight: "700", textAlign: "center" }}>Submit for Verification</Text>
           </TouchableOpacity>
         </Pressable>
+      </View>
+    </ScreenHolder>
+  )
+}
+
+function App_AddNegativeTest({ navigation }) {
+  let PROVIDERS = [
+    { name: "Walmart", image: require("./assets/walmart.jpg") },
+    { name: "CVS Pharmacy", image: require("./assets/cvs.png") },
+    { name: "Walgreens",        image: require("./assets/walgreens.jpeg") },
+    { name: "Rite Aid",        image: require("./assets/rite-aid.png") },
+    { name: "Human API",        image: require("./assets/human-api.png") },
+    { name: "Kaiser Permanente",        image: require("./assets/kaiser-permanente.png") },
+  ]
+
+  return (
+    <ScreenHolder navigation={navigation}>
+      <View style={{ height: 48,
+                     width: "100%",
+                     backgroundColor: "#1F262D",
+                     display: "flex",
+                     flexDirection: "row",
+                     alignItems: "center",
+                     paddingHorizontal: 10,
+                     justifyContent: "space-between"
+      }}>
+        <Ionicons name="chevron-back-outline" size={35} color="white" />
+        <Text style={{ flex: 1, textAlign: "center", color: "#FFFFFF", fontSize: 20, fontWeight: "800" }}>COO - Add Negative Test</Text>
+      </View>
+      <Text style={{ fontSize: 20, paddingHorizontal: 10, paddingTop: 20 }}>Please select your test provider bellow.</Text>
+      <View style={{ paddingHorizontal: 10 }}>
+        {PROVIDERS.map((e, i) => {
+          return (
+            <TouchableOpacity key={i}>
+              <View style={{ marginVertical: 10, padding: 10, borderRadius: 15, borderWidth: 1, alignItems: "center", flexDirection: "row" }}>
+                <Image style={{ width: 60, height: 60 }} source={e.image}></Image>
+                <Text style={{ flex: 1, textAlign: "center", fontWeight: "700", fontSize: 30 }}>{e.name}</Text>
+              </View>
+            </TouchableOpacity>
+          )
+        })}
       </View>
     </ScreenHolder>
   )
