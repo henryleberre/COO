@@ -8,6 +8,7 @@ import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import Emoji    from 'react-native-emoji';
 import Carousel from 'react-native-snap-carousel';
 import QRCode   from 'react-native-qrcode-svg';
+import Dialog   from "react-native-dialog";
 
 const APP_NAME = "COO";
 
@@ -29,19 +30,22 @@ let PAGES = [
   { bShow: false, icon: () => {},                                                                             title: "COO_Main",               component: App_COO_Main },
   { bShow: false, icon: () => {},                                                                             title: "AddVaccine",             component: App_AddVaccine },
   { bShow: false, icon: () => {},                                                                             title: "ProcessRequest",         component: App_ProcessRequest },
-  { bShow: false, icon: () => {},                                                                             title: "AddNegativeTest",        component: App_AddNegativeTest }
+  { bShow: false, icon: () => {},                                                                             title: "AddNegativeTest",        component: App_AddNegativeTest },
+  { bShow: false, icon: () => {},                                                                             title: "Under13",                component: App_Under13 }
 ];
 
 const CATEGORIES = [
   { name: "The Rolling Stones", backgroundImageRes: require("./assets/the-rolling-stones.jpg"), rating: 4.8 },
   { name: "Les Inconnus",       backgroundImageRes: require("./assets/les-inconnus.jpg"),       rating: 4.5 },
-  { name: "Radiohead",          backgroundImageRes: require("./assets/radiohead.jpg"),          rating: 4.6 }
+  { name: "Radiohead",          backgroundImageRes: require("./assets/radiohead.jpg"),          rating: 4.6 },
+  { name: "Disney on Ice",      backgroundImageRes: require("./assets/disney-on-ice.jpg"),      rating: 4.9 }
 ];
 
 let EVENTS = [
   { category: "The Rolling Stones", name: "The Rolling Stones Concert", date: { day: 17, month: "Nov", dayName: "Wed", time: "7:30pm" }, location: "Grant Field - Atlanta, GA",           covidLocation: "The Box Office", seatImage: require('./assets/bobby-dodd-stadium.jpg'), operation: "The Rolling Stones - No Filter Tour 2021" },
   { category: "Les Inconnus",       name: "Les Inconnus Concert",       date: { day: 17, month: "Nov", dayName: "Wed", time: "7:30pm" }, location: "Mercedes-Benz Stadium - Atlanta, GA", covidLocation: "The Box Office", seatImage: require('./assets/bobby-dodd-stadium.jpg'), operation: "Les Inconnus - Le Retour" },
-  { category: "Radiohead",          name: "Radiohead Concert",          date: { day: 27, month: "Nov", dayName: "Sat", time: "7:30pm" }, location: "Grant Field - Atlanta, GA",          covidLocation: "The Box Office", seatImage: require('./assets/bobby-dodd-stadium.jpg'), operation: "Radiohead - World Tour 2021" }
+  { category: "Radiohead",          name: "Radiohead Concert",          date: { day: 27, month: "Nov", dayName: "Sat", time: "7:30pm" }, location: "Grant Field - Atlanta, GA",           covidLocation: "The Box Office", seatImage: require('./assets/bobby-dodd-stadium.jpg'), operation: "Radiohead - World Tour 2021" },
+  { category: "Disney on Ice",      name: "Disney on Ice",              date: { day: 23, month: "Dec", dayName: "Thu", time: "6:00pm" }, location: "Grant Field - Atlanta, GA",           covidLocation: "The Box Office", seatImage: require('./assets/bobby-dodd-stadium.jpg'), operation: "Disney on Ice - 2021" }
 ];
 
 let TICKETS = [  ];
@@ -509,6 +513,8 @@ function App_GetTicketFinished({ navigation, route }) {
 }
 
 function App_PrivacyPolicy_BODY({ event }) {
+  let [font_size, set_font_size] = useState(20);
+
   return (
     <>
       <View style={{ borderBottomWidth: 1, paddingVertical: 10, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
@@ -531,13 +537,13 @@ function App_PrivacyPolicy_BODY({ event }) {
           </TouchableOpacity>
         </View>
         <View style={{ flexDirection: "row" }}>
-          <Pressable style={{ borderWidth: 2, borderRadius: 5, padding: 10, flexDirection: "row", alignItems: "center" }}>
+          <Pressable onPress={() => { set_font_size(font_size-1); }} style={{ borderWidth: 2, borderRadius: 5, padding: 10, flexDirection: "row", alignItems: "center" }}>
             <TouchableOpacity>
               <Text style={{ fontSize: 30 }}>a</Text>
             </TouchableOpacity>
           </Pressable>
           <View style={{ paddingHorizontal: 4 }}></View>
-          <Pressable style={{ borderWidth: 2, borderRadius: 5, padding: 10, flexDirection: "row", alignItems: "center" }}>
+          <Pressable onPress={() => { set_font_size(font_size+1); }} style={{ borderWidth: 2, borderRadius: 5, padding: 10, flexDirection: "row", alignItems: "center" }}>
             <TouchableOpacity>
               <Text style={{ fontSize: 30 }}>A</Text>
             </TouchableOpacity>
@@ -546,7 +552,7 @@ function App_PrivacyPolicy_BODY({ event }) {
         </View>
       </View>
       <View style={{ padding: 20 }}>
-        <Text style={{ fontSize: 20 }}>Privacy Policy Text Goes Here.</Text>
+        <Text style={{ fontSize: font_size }}>Privacy Policy Text Goes Here.</Text>
       </View>
     </>
   );
@@ -593,7 +599,8 @@ function App_MyEvents({ navigation }) {
   // TODO: USE GLOBAL STATE
   TICKETS = [
     { name: "The Rolling Stones Concert", count: 1 },
-    { name: "Radiohead Concert",          count: 2 }
+    { name: "Radiohead Concert",          count: 2 },
+    { name: "Disney on Ice",              count: 3 }
   ]
 
   return (
@@ -678,8 +685,19 @@ function App_Tickets({ navigation, route }) {
   let category = route.params.category;
   let event    = route.params.event;
   
+  let [code_prompt_show, set_code_prompt_show] = useState(false);
+
   return (
     <ScreenHolder navigation={navigation}>
+      <Dialog.Container visible={code_prompt_show}>
+        <Dialog.Title>Send E-mail to Attendee</Dialog.Title>
+        <Dialog.Description>
+          Share their email so they can satisfy their health requirements and obtain their QR Code to attend.
+        </Dialog.Description>
+        <Dialog.Input placeholder="right here" />
+        <Dialog.Button onPress={() => {set_code_prompt_show(false);}} label="Cancel" />
+        <Dialog.Button onPress={() => {set_code_prompt_show(false);}} label="Submit" />
+      </Dialog.Container>
       <View style={{ height: 48,
                      width: "100%",
                      backgroundColor: "#1F262D",
@@ -724,9 +742,9 @@ function App_Tickets({ navigation, route }) {
                   <Text style={{ fontSize: 20, fontWeight: "700", textAlign: "center" }}>Health Requirements</Text>
                   <View style={{ paddingTop: 10 }}>
                     <Button onPress={() => { navigation.navigate("OptinCOO", { event }); }} title="Use COO (Recommended)" />
-                    <Button title="Send e-mail to a participant" />
+                    <Button onPress={() => { set_code_prompt_show(true); }} title="Send e-mail to a participant" />
                     <Button title="Bring your documents" />
-                    <Button title="This ticket is for a child" />
+                    <Button onPress={() => { navigation.navigate("Under13") }} title="This ticket is for a child" />
                     <Button title="I am exempt" />
                   </View>
                 </View>
@@ -967,12 +985,14 @@ function App_AddNegativeTest({ navigation }) {
       <View style={{ paddingHorizontal: 10 }}>
         {PROVIDERS.map((e, i) => {
           return (
-            <TouchableOpacity key={i}>
-              <View style={{ marginVertical: 10, padding: 10, borderRadius: 15, borderWidth: 1, alignItems: "center", flexDirection: "row" }}>
-                <Image style={{ width: 60, height: 60 }} source={e.image}></Image>
-                <Text style={{ flex: 1, textAlign: "center", fontWeight: "700", fontSize: 30 }}>{e.name}</Text>
-              </View>
-            </TouchableOpacity>
+            <Pressable key={i} onPress={() => { navigation.navigate("ProcessRequest"); }}>
+              <TouchableOpacity>
+                <View style={{ marginVertical: 10, padding: 10, borderRadius: 15, borderWidth: 1, alignItems: "center", flexDirection: "row" }}>
+                  <Image style={{ width: 60, height: 60 }} source={e.image}></Image>
+                  <Text style={{ flex: 1, textAlign: "center", fontWeight: "700", fontSize: 30 }}>{e.name}</Text>
+                </View>
+              </TouchableOpacity>
+            </Pressable>
           )
         })}
       </View>
@@ -997,6 +1017,28 @@ function App_ProcessRequest({ navigation }) {
       </View>
       <View style={{ paddingHorizontal: 15 }}>
         <Text style={{ paddingVertical: 200, fontSize: 25, fontWeight: "600", textAlign: "center" }}>Your Upload was successful. We will notify you when your verification is complete via email. When it is, you can access your health verified ticket.</Text>
+      </View>
+    </ScreenHolder>
+  )
+}
+
+function App_Under13({ navigation }) {
+  return (
+    <ScreenHolder navigation={navigation}>
+      <View style={{ height: 48,
+                     width: "100%",
+                     backgroundColor: "#1F262D",
+                     display: "flex",
+                     flexDirection: "row",
+                     alignItems: "center",
+                     paddingHorizontal: 10,
+                     justifyContent: "space-between"
+      }}>
+        <Ionicons name="chevron-back-outline" size={35} color="white" />
+        <Text style={{ flex: 1, textAlign: "center", color: "#FFFFFF", fontSize: 20, fontWeight: "800" }}>Child Ticket</Text>
+      </View>
+      <View style={{ paddingHorizontal: 15 }}>
+        <Text style={{ paddingVertical: 200, fontSize: 20, fontWeight: "600", textAlign: "justify" }}>If this ticket is for child (an attendee less than 13 years of age), please check the organizer's policy, listed under your tickets. This section features a phone number you can call if you have any questions or concerns.</Text>
       </View>
     </ScreenHolder>
   )
