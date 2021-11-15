@@ -513,7 +513,7 @@ function App_GetTicketFinished({ navigation, route }) {
 }
 
 function App_PrivacyPolicy_BODY({ event }) {
-  let [font_size, set_font_size] = useState(20);
+  let [font_scale, set_font_scale] = useState(1);
 
   return (
     <>
@@ -537,13 +537,13 @@ function App_PrivacyPolicy_BODY({ event }) {
           </TouchableOpacity>
         </View>
         <View style={{ flexDirection: "row" }}>
-          <Pressable onPress={() => { set_font_size(font_size-1); }} style={{ borderWidth: 2, borderRadius: 5, padding: 10, flexDirection: "row", alignItems: "center" }}>
+          <Pressable onPress={() => { set_font_scale(font_scale-0.1); }} style={{ borderWidth: 2, borderRadius: 5, padding: 10, flexDirection: "row", alignItems: "center" }}>
             <TouchableOpacity>
               <Text style={{ fontSize: 30 }}>a</Text>
             </TouchableOpacity>
           </Pressable>
           <View style={{ paddingHorizontal: 4 }}></View>
-          <Pressable onPress={() => { set_font_size(font_size+1); }} style={{ borderWidth: 2, borderRadius: 5, padding: 10, flexDirection: "row", alignItems: "center" }}>
+          <Pressable onPress={() => { set_font_scale(font_scale+0.1); }} style={{ borderWidth: 2, borderRadius: 5, padding: 10, flexDirection: "row", alignItems: "center" }}>
             <TouchableOpacity>
               <Text style={{ fontSize: 30 }}>A</Text>
             </TouchableOpacity>
@@ -552,7 +552,24 @@ function App_PrivacyPolicy_BODY({ event }) {
         </View>
       </View>
       <View style={{ padding: 20 }}>
-        <Text style={{ fontSize: font_size }}>Privacy Policy Text Goes Here.</Text>
+        <Text style={{ fontSize: 24*font_scale, lineHeight: 40*font_scale, textAlign: "justify" }}>
+          COO Health Pass (“COO”, “We,” or “Us”) is committed to protecting the privacy and security of our users (“You”). The Privacy Policy (“the Policy”) outlined here covers our policies concerning the collection, processing, and sharing of data (“data handling”), and it outlines your rights concerning our data handling. The Policy governs any interaction you have with us, our products, and our services. 
+          COO Health Pass integrates with a Ticket Providing Partner (TPP). In addition to our Privacy Policy, any policies and terms outlined by the TPP apply to interactions you have with us, our products, and our services.
+          We do not sell information about you without your unequivocal permission.
+        </Text>
+        <Text style={{ fontSize: 24*font_scale*1.25, lineHeight: 40*font_scale*1.25, textAlign: "justify", fontWeight: "700" }}>Definitions</Text>
+        <Text style={{ fontSize: 24*font_scale*1.25, lineHeight: 40*font_scale*1.25, textAlign: "justify", fontWeight: "700" }}>Venue</Text>
+        <Text style={{ fontSize: 24*font_scale, lineHeight: 40*font_scale, textAlign: "justify"}}>An individual or group using our app to verify you have a negative test, recovered from COVID-19, or are vaccinated.</Text>
+        <Text style={{ fontSize: 24*font_scale*1.25, lineHeight: 40*font_scale*1.25, textAlign: "justify", fontWeight: "700" }}>Healthcare Provider</Text>
+        <Text style={{ fontSize: 24*font_scale, lineHeight: 40*font_scale, textAlign: "justify"}}>An individual or organization who provides COVID-19 test data or vaccination data about you.</Text>
+        <Text style={{ fontSize: 24*font_scale*1.25, lineHeight: 40*font_scale*1.25, textAlign: "justify", fontWeight: "700" }}>Partner Healthcare Provider</Text>
+        <Text style={{ fontSize: 24*font_scale, lineHeight: 40*font_scale, textAlign: "justify"}}>A Healthcare Provider that we’ve authorized to directly send us Health Information about you.</Text>
+        <Text style={{ fontSize: 24*font_scale*1.25, lineHeight: 40*font_scale*1.25, textAlign: "justify", fontWeight: "700" }}>Personal Information (PI)</Text>
+        <Text style={{ fontSize: 24*font_scale, lineHeight: 40*font_scale, textAlign: "justify"}}>Any information about you, enumerated in Section 1. We abbreviate Personal Information as PI.</Text>
+        <Text style={{ fontSize: 24*font_scale*1.25, lineHeight: 40*font_scale*1.25, textAlign: "justify", fontWeight: "700" }}>Information Processing</Text>
+        <Text style={{ fontSize: 24*font_scale, lineHeight: 40*font_scale, textAlign: "justify"}}>Includes the storage, classification, computation, coding and updating of information. Information sharing is not included in processing.</Text>
+        <Text style={{ fontSize: 24*font_scale*1.25, lineHeight: 40*font_scale*1.25, textAlign: "justify", fontWeight: "700" }}>Delete Information</Text>
+        <Text style={{ fontSize: 24*font_scale, lineHeight: 40*font_scale, textAlign: "justify"}}>To render information permanently inaccessible (for example, overwriting memory with zeros)</Text>
       </View>
     </>
   );
@@ -791,6 +808,13 @@ function Aop_OptinCOO({ navigation, route }) {
       buttonText: "Next"
     },
     {
+      title: "COO's Privacy Policy (Summary)",
+      body: <View style={{ padding: 10 }}>
+        <Text>Ok</Text>
+      </View>,
+      buttonText: "View Full Privacy Policy"
+    },
+    {
       title: "COO's Privacy Policy",
       body: <App_PrivacyPolicy_BODY event={route.params.event}></App_PrivacyPolicy_BODY>,
       buttonText: "I Agree"
@@ -815,7 +839,7 @@ function Aop_OptinCOO({ navigation, route }) {
       </View>
       <Text style={{ padding: 20, fontSize: 30, fontWeight: "800"}}>{arr[state].title}</Text>
       {arr[state].body}
-      <Pressable onPress={() => { if (state == 0) { setState(1); } else { navigation.navigate("COO_Main"); } }} style={{ margin: 20, borderRadius: 30, padding: 10, backgroundColor: "black" }}>
+      <Pressable onPress={() => { if (state <= 1) { setState(state+1); } else { navigation.navigate("COO_Main"); } }} style={{ margin: 20, borderRadius: 30, padding: 10, backgroundColor: "black" }}>
         <TouchableOpacity>
           <Text style={{ color: "white", fontSize: 25, textAlign: "center" }}>{arr[state].buttonText}</Text>
         </TouchableOpacity>
@@ -909,6 +933,14 @@ function App_COO_Main({ navigation }) {
         </View>
 
       </View>
+      <View style={{ paddingVertical: 2 }}></View>
+
+      <Pressable style={{ margin: 20, padding: 10, borderRadius: 15, borderWidth: 1 }}>
+        <TouchableOpacity>
+          <Text style={{ textAlign: "center", color: "red", fontWeight: "700", fontSize: 20 }}>Delete My Health Information From COO</Text>
+        </TouchableOpacity>
+      </Pressable>
+
       <View style={{ paddingVertical: 20 }}></View>
     </ScreenHolder>
   )
